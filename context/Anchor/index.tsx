@@ -19,7 +19,7 @@ interface WorkSpace{
     program?: Program<MovieReview>
 }
 
-const WorkSpaceProvider = ({children}: any) => {
+const WorkspaceProvider = ({children}: any) => {
     const wallet= useAnchorWallet() || MockWallet
     const {connection} = useConnection()
 
@@ -43,4 +43,4 @@ const useWorkspace= (): WorkSpace => {
     return useContext(WorkspaceContext)
 }
 
-export {WorkSpaceProvider, useWorkspace}
+export {WorkspaceProvider, useWorkspace}
