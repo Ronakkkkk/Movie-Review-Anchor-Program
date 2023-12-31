@@ -33,7 +33,47 @@ export const ReviewDetail: FC<ReviewDetailProps> = ({
   const { publicKey, sendTransaction } = useWallet()
   const { program } = useWorkspace()
 
-  const handleSubmit = async (event: any) => {}
+  const handleSubmit = async (event: any) => {
+    event.preventDefault()
+
+    if(!publicKey || !program){
+      alert("Please connect your wallet")
+      return
+    }
+
+    const movieReview = new anchor.web3.PublicKey(movie.publicKey)
+
+    const [movieReviewCounterPda] = await anchor.web3.PublicKey.findProgramAddress(
+      [Buffer.from("Counter"), movieReview.toBuffer()], program.programId
+    )
+
+    
+    const [mintPDA] = await anchor.web3.PublicKey.findProgramAddress([Buffer.from("mint")], program.programId)
+    
+    const tokenAddress = await getAssociatedTokenAddress(mintPDA, publicKey)
+
+    const transaction = new anchor.web3.Transaction()
+
+    const instruction = await program.methods.addComment(comment).accounts({
+      movieReview: movieReview,
+      movieCommentCounter: movieReviewCounterPda,
+      tokenAccount: tokenAddress,
+    })
+    .instruction()
+
+    transaction.add(instruction)
+
+    try {
+      let txid= await sendTransaction(transaction,connection)
+      alert(`Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`)
+      console.log(`Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`)
+    } catch (error) {
+      alert(JSON.stringify(error))
+      console.log(JSON.stringify(error))
+    }
+  }
+
+
 
   return (
     <div>
