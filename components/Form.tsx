@@ -35,7 +35,7 @@ export const Form: FC = () => {
     event.preventDefault()
 
     if (!publicKey || !program) {
-      alert("Please connect your wallet")
+      alert("Please connect your wallet!")
       return
     }
 
@@ -49,21 +49,31 @@ export const Form: FC = () => {
     const transaction = new anchor.web3.Transaction()
 
     if (toggle) {
-      const instruction = await program.methods.addMovieReview(title, description, rating).accounts({
-        tokenAccount: tokenAddress
-      }).instruction()
+      const instruction = await program.methods
+        .addMovieReview(title, description, rating)
+        .accounts({
+          tokenAccount: tokenAddress,
+        })
+        .instruction()
+
       transaction.add(instruction)
-    }else{
-      const instruction = await program.methods.updateMovieReview(title, description, rating).instruction()
-    transaction.add(instruction)
+    } else {
+      const instruction = await program.methods
+        .updateMovieReview(title, description, rating)
+        .instruction()
+
+      transaction.add(instruction)
     }
 
-    try{
+    try {
       let txid = await sendTransaction(transaction, connection)
-      alert(`Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`)
-    
-    console.log(`Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`)
-    } catch(e){
+      alert(
+        `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`
+      )
+      console.log(
+        `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`
+      )
+    } catch (e) {
       console.log(JSON.stringify(e))
       alert(JSON.stringify(e))
     }
